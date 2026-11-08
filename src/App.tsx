@@ -130,14 +130,14 @@ export default function App() {
     <div className="main-column">
       <header className="topbar"><span>云资源 / 资源明细</span><span className="demo-label">交互演示</span></header>
       <main className="page" id="overview">
-        <div className="page-heading"><div><p className="eyebrow">资源使用记录</p><h1>资源消耗明细</h1><p className="page-subtitle">按项目和任务条件查看核时数消耗，快速定位需要核对的记录。</p></div><span className="sample-badge">示例数据</span></div>
+        <div className="page-heading"><div><p className="eyebrow">资源使用记录</p><h1>资源消耗明细列表</h1><p className="page-subtitle">按项目和任务条件查看核时数消耗，快速定位需要核对的记录。</p></div><span className="sample-badge">示例数据</span></div>
         <div className="demo-modes" role="group" aria-label="示例环境"><span>示例环境</span>{modes.map((item) => <button key={item.value} type="button" aria-pressed={mode === item.value} onClick={() => changeMode(item.value)}>{item.label}</button>)}</div>
         <section className="summary-grid" aria-label="示例数据汇总">
           <div className="summary-card"><span className="summary-icon">▦</span><div><span>匹配任务</span><strong>{results.length}<small> 条</small></strong></div></div>
           <div className="summary-card summary-accent"><span className="summary-icon">◷</span><div><span>核时数消耗</span><strong>{totalCoreHours(results)}<small> 核时</small></strong></div></div>
         </section>
-        <section className="details-card" id="details" aria-labelledby="details-title" aria-label="资源消耗明细，示例数据">
-          <div className="details-header"><div><h2 id="details-title">资源消耗明细</h2><p>筛选结果会同步更新表格与核时数汇总</p></div><span className="results-count">共 {results.length} 条任务</span></div>
+        <section className="details-card" id="details" aria-labelledby="details-title" aria-label="资源消耗明细列表，示例数据">
+          <div className="details-header"><div><h2 id="details-title">资源消耗明细列表</h2><p>筛选结果会同步更新表格与核时数汇总</p></div><span className="results-count">共 {results.length} 条任务</span></div>
           <div className="toolbar">
             <div className="search-area">
               <form className="project-search" role="search" onSubmit={(event) => { event.preventDefault(); searchProject() }}>
