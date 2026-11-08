@@ -32,7 +32,7 @@ export default function AdvancedSearch({ mode, draft, availableTasks, error, onC
   return (
     <section className="advanced-panel" role="dialog" aria-modal="false" aria-labelledby="advanced-title" onKeyDown={(event) => { if (event.key === 'Escape') onClose() }}>
       <div className="panel-heading">
-        <div><h3 id="advanced-title">高级搜索</h3><p>按任务条件缩小资源消耗明细范围</p></div>
+        <div><h3 id="advanced-title">高级搜索</h3><p>按任务条件筛选资源消耗明细列表</p></div>
         <button type="button" className="icon-button close-button" onClick={onClose} aria-label="关闭高级搜索">×</button>
       </div>
 

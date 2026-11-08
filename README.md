@@ -1,6 +1,6 @@
 # agent-demo
 
-Codex 多 Agent 配置和资源消耗明细筛选页面示例。
+Codex 多 Agent 配置和资源消耗明细列表筛选页面示例。
 
 ## 运行页面
 

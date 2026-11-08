@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import App from './App'
 
-describe('资源消耗明细页面', () => {
+describe('资源消耗明细列表页面', () => {
   // Catches a panel that cannot apply a draft filter or fails to sync the applied chip and table.
   it('搜索后显示筛选标签，清除标签同步恢复表格', async () => {
     const user = userEvent.setup()
