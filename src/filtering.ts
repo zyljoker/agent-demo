@@ -2,6 +2,8 @@ export type Mode = 'certified' | 'uncertified' | 'private'
 export type UserKind = 'internal' | 'external'
 export type ResourceType = 'CPU' | 'GPU'
 export type TaskStatus = '已完成' | '已取消' | '异常'
+export type ProjectFileStatus = 'normal' | 'in_recycle_bin' | 'permanently_deleted' | 'no_permission'
+export type UserStatus = 'active' | 'left_space' | 'account_deleted'
 
 export interface Task {
   id: string
@@ -16,10 +18,16 @@ export interface Task {
   status: TaskStatus
   startedAt: string
   endedAt: string
-  coreHours: number
-  cpuCores: number
+  coreHours: number | null
+  cpuCores: number | null
   duration: string
   path: string
+  projectFileStatus?: ProjectFileStatus
+  crossSpace?: boolean
+  spaceDismissed?: boolean
+  userStatus?: UserStatus
+  errorType?: string
+  errorMessage?: string
 }
 
 export interface Filters {
@@ -29,7 +37,7 @@ export interface Filters {
   users: string[]
   spaces: string[]
   resourceTypes: ResourceType[]
-  status: TaskStatus | ''
+  status: TaskStatus[]
   startDate: string
   endDate: string
 }
@@ -48,7 +56,7 @@ export const emptyFilters = (): Filters => ({
   users: [],
   spaces: [],
   resourceTypes: [],
-  status: '',
+  status: [],
   startDate: '',
   endDate: '',
 })
@@ -62,7 +70,7 @@ export function filterTasks(tasks: Task[], filters: Filters, mode: Mode): Task[]
     if (mode !== 'private' && task.resourceType === 'GPU') return false
     if (project && !task.projectName.toLocaleLowerCase().includes(project)) return false
     if (filters.modules.length && !filters.modules.includes(task.module)) return false
-    if (filters.status && task.status !== filters.status) return false
+    if (filters.status.length && !filters.status.includes(task.status)) return false
 
     const taskDate = task.startedAt.slice(0, 10)
     if (filters.startDate && taskDate < filters.startDate) return false
@@ -103,6 +111,20 @@ export function groupTasks(tasks: Task[]): TaskGroup[] {
 }
 
 export function totalCoreHours(tasks: Task[]): string {
-  const total = tasks.reduce((sum, task) => sum + task.coreHours, 0)
+  if (tasks.length === 0 || tasks.every((task) => task.coreHours === null)) return '/'
+  const total = tasks.reduce((sum, task) => sum + (task.coreHours ?? 0), 0)
   return (Math.round((total + Number.EPSILON) * 10_000) / 10_000).toFixed(4)
+}
+
+export function formatCoreHours(value: number | null): string {
+  return value === null ? '/' : (Math.round((value + Number.EPSILON) * 10_000) / 10_000).toFixed(4)
+}
+
+export function formatDuration(startedAt: string, endedAt: string): string {
+  const seconds = Math.floor((new Date(endedAt).getTime() - new Date(startedAt).getTime()) / 1000)
+  if (!Number.isFinite(seconds) || seconds < 0) return '/'
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainder = seconds % 60
+  return `${hours ? `${hours}小时` : ''}${minutes ? `${minutes}分钟` : ''}${remainder || (!hours && !minutes) ? `${remainder}秒` : ''}`
 }

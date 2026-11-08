@@ -41,7 +41,7 @@ export default function AdvancedSearch({ mode, draft, availableTasks, error, onC
           <label className="field-label" htmlFor="task-name">任务名称</label>
           <input id="task-name" type="text" maxLength={21} placeholder="请输入任务名称" value={draft.taskName} onChange={(event) => set('taskName', event.target.value)} />
         </div>
-      ) : <div className="upgrade-note">认证企业后可使用任务名称、操作人、操作空间和求解资源类型筛选。</div>}
+      ) : <div className="upgrade-note">提示：认证企业后可解锁更多高级搜索，如：任务名称、操作人、操作空间、求解资源类型</div>}
 
       <MultiSelect label="任务模块" options={moduleOptions.map((value) => ({ value, label: value }))} selected={draft.modules} onChange={(value) => set('modules', value)} {...select('modules')} />
 
@@ -51,13 +51,7 @@ export default function AdvancedSearch({ mode, draft, availableTasks, error, onC
         <MultiSelect label="求解资源类型" options={resources} selected={draft.resourceTypes} onChange={(value) => set('resourceTypes', value as ResourceType[])} {...select('resourceTypes')} />
       </>}
 
-      <div className="field">
-        <label className="field-label" htmlFor="status">状态</label>
-        <select id="status" value={draft.status} onChange={(event) => set('status', event.target.value as Filters['status'])}>
-          <option value="">请选择</option>
-          {statuses.map((status) => <option key={status} value={status}>{status}</option>)}
-        </select>
-      </div>
+      <MultiSelect label="状态" options={statuses.map((value) => ({ value, label: value }))} selected={draft.status} onChange={(value) => set('status', value as TaskStatus[])} {...select('status')} />
 
       <fieldset className="date-field">
         <legend className="field-label">时间（按任务起始日期）</legend>

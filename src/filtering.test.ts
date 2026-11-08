@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { emptyFilters, filterTasks, groupTasks, totalCoreHours, type Task } from './filtering'
+import { emptyFilters, filterTasks, formatCoreHours, formatDuration, groupTasks, totalCoreHours, type Task } from './filtering'
 
 const rows: Task[] = [
   { id: 'a1', projectId: 'a', projectName: '示例项目 A', taskName: '网格生成', module: '几何', user: '成员甲', userKind: 'internal', space: '空间一', resourceType: 'CPU', status: '已完成', startedAt: '2026-11-01T09:00:00', endedAt: '2026-11-01T10:00:00', coreHours: 1.23456, cpuCores: 8, duration: '1小时', path: '/项目/A' },
@@ -21,6 +21,11 @@ describe('资源消耗筛选', () => {
     expect(filterTasks(rows, filters, 'private').map((row) => row.id)).toEqual(['a2'])
   })
 
+  it('同一字段多选取并集，不同字段取交集', () => {
+    const filters = { ...emptyFilters(), modules: ['几何', '力学'], status: ['已完成', '异常'] as Task['status'][] }
+    expect(filterTasks(rows, filters, 'private').map((row) => row.id)).toEqual(['a1', 'a2'])
+  })
+
   // Catches grouping by the first task rather than the latest task in each project.
   it('按项目最新任务时间排序，并将组内任务倒序排列', () => {
     expect(groupTasks(rows).map((group) => [group.projectId, group.tasks.map((task) => task.id)])).toEqual([
@@ -32,5 +37,21 @@ describe('资源消耗筛选', () => {
   // Catches premature rounding of individual rows before calculating the displayed total.
   it('汇总后四舍五入到四位小数', () => {
     expect(totalCoreHours(rows)).toBe('3.3581')
+  })
+
+  it('核时数缺失显示斜杠，汇总忽略缺失值', () => {
+    const withMissing = { ...rows[0], coreHours: null, cpuCores: null }
+    expect(formatCoreHours(withMissing.coreHours)).toBe('/')
+    expect(formatCoreHours(1.2)).toBe('1.2000')
+    expect(formatCoreHours(0.00015)).toBe('0.0002')
+    expect(totalCoreHours([withMissing, rows[1]])).toBe('2.0001')
+    expect(totalCoreHours([])).toBe('/')
+    expect(totalCoreHours([withMissing])).toBe('/')
+  })
+
+  it('按起止时间生成运行时长并省略零单位', () => {
+    expect(formatDuration('2026-11-08T09:20:00', '2026-11-08T09:58:00')).toBe('38分钟')
+    expect(formatDuration('2026-11-08T09:20:00', '2026-11-08T09:20:48')).toBe('48秒')
+    expect(formatDuration('2026-11-08T09:20:00', '2026-11-08T10:21:41')).toBe('1小时1分钟41秒')
   })
 })

@@ -18,8 +18,8 @@ interface MultiSelectProps {
 }
 
 export default function MultiSelect({ label, placeholder = '请选择', options, selected, open, onToggle, onChange, children }: MultiSelectProps) {
-  const chosen = options.filter((option) => selected.includes(option.value))
-  const summary = chosen.length === 0 ? placeholder : chosen.length === 1 ? chosen[0].label : `${chosen[0].label} 等 ${chosen.length} 项`
+  const chosen = selected.map((value) => options.find((option) => option.value === value)).filter((option): option is SelectOption => Boolean(option))
+  const summary = chosen.length === 0 ? placeholder : chosen.length === 1 ? chosen[0].label : `${chosen[0].label} +${chosen.length - 1}`
   const groups = [...new Set(options.map((option) => option.group || ''))]
 
   function toggle(value: string) {

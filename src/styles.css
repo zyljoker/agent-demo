@@ -138,6 +138,9 @@ tbody tr { border-top: 1px solid #e7ebef; }
 .group-path { margin-left: 9px; }
 .path-button { display: inline-grid; place-items: center; width: 22px; height: 22px; border: 0; border-radius: 4px; background: #fff0e5; color: #a94800; font-weight: 700; }
 .path-button:hover { background: #ffe1cb; }
+.project-link, .project-open { border: 0; background: transparent; color: #285a87; cursor: pointer; font: inherit; text-align: left; }
+.project-link:hover, .project-open:hover { text-decoration: underline; }
+.project-open { margin-left: 10px; font-size: 12px; }
 .project-cell { display: inline-flex; align-items: center; gap: 8px; }
 .muted { color: #a2abb4; }
 .task-name { color: #202a35; font-weight: 600; }
@@ -153,6 +156,9 @@ tbody tr { border-top: 1px solid #e7ebef; }
 .status-已完成 { color: #146236; background: #e8f6ee; }
 .status-已取消 { color: #556371; background: #eef1f4; }
 .status-异常 { color: #a94800; background: #fff0e5; }
+.error-popover { position: relative; display: inline-block; margin-left: 5px; color: #a94800; cursor: help; }
+.error-popover > span { display: none; position: absolute; z-index: 30; right: 0; bottom: calc(100% + 8px); width: max-content; max-width: 260px; padding: 8px 10px; border-radius: 4px; background: #26313d; color: #fff; font-size: 12px; white-space: normal; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+.error-popover:hover > span, .error-popover:focus > span { display: block; }
 .table-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 14px 0 16px; color: #6a7785; font-size: 11px; }
 .empty-state { display: grid; justify-items: center; padding: 58px 20px; border: 1px dashed #cbd4dd; border-radius: 6px; text-align: center; }
 .empty-state > span { color: #a4afba; font-size: 42px; line-height: 1; }

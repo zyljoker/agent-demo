@@ -46,7 +46,7 @@ describe('资源消耗明细列表页面', () => {
     await user.click(screen.getByRole('button', { name: '未认证企业' }))
     await user.click(screen.getByRole('button', { name: '高级搜索' }))
     expect(screen.queryByLabelText('任务名称')).not.toBeInTheDocument()
-    expect(screen.getByText(/认证企业后可使用任务名称/)).toBeInTheDocument()
+    expect(screen.getByText(/认证企业后可解锁更多高级搜索/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: '选择求解资源类型' })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: '私有化' }))
     await user.click(screen.getByRole('button', { name: '高级搜索' }))
@@ -62,7 +62,7 @@ describe('资源消耗明细列表页面', () => {
     await user.click(screen.getByRole('checkbox', { name: '几何' }))
     await user.click(screen.getByRole('checkbox', { name: '力学' }))
     await user.click(screen.getByRole('button', { name: '应用筛选' }))
-    expect(screen.getByText('任务模块：几何 等 2 项')).toBeInTheDocument()
+    expect(screen.getByText('任务模块：几何 +1')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: '高级搜索' }))
     await user.click(screen.getByRole('button', { name: '重置' }))
     await user.click(screen.getByRole('button', { name: '应用筛选' }))
@@ -90,10 +90,53 @@ describe('资源消耗明细列表页面', () => {
   it('分组开关切换项目分组与逐条任务展示', async () => {
     const user = userEvent.setup()
     render(<App />)
-    expect(screen.getByRole('button', { name: /示例项目 A.*2 条任务/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /切换示例项目 A分组，2 条任务/ })).toBeInTheDocument()
     await user.click(screen.getByRole('checkbox', { name: '分组展示' }))
-    expect(screen.queryByRole('button', { name: /示例项目 A.*2 条任务/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /切换示例项目 A分组，2 条任务/ })).not.toBeInTheDocument()
     expect(screen.getAllByText('示例项目 A')).toHaveLength(2)
+    expect(screen.queryByRole('button', { name: /查看示例项目 A路径/ })).not.toBeInTheDocument()
+  })
+
+  it('状态可多选，筛选标签与明细同步', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: '高级搜索' }))
+    await user.click(screen.getByRole('button', { name: '选择状态' }))
+    await user.click(screen.getByRole('checkbox', { name: '已完成' }))
+    await user.click(screen.getByRole('checkbox', { name: '异常' }))
+    await user.click(screen.getByRole('button', { name: '应用筛选' }))
+    expect(screen.getByText('状态：已完成 +1')).toBeInTheDocument()
+    expect(screen.queryByText('结构求解')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: '清除状态筛选' }))
+    expect(screen.getAllByText('结构求解').length).toBeGreaterThan(0)
+  })
+
+  it('面板与标签使用相同的多选顺序摘要', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: '高级搜索' }))
+    await user.click(screen.getByRole('button', { name: '选择任务模块' }))
+    await user.click(screen.getByRole('checkbox', { name: '力学' }))
+    await user.click(screen.getByRole('checkbox', { name: '几何' }))
+    expect(screen.getByRole('button', { name: '选择任务模块' })).toHaveTextContent('力学 +1')
+    await user.click(screen.getByRole('button', { name: '应用筛选' }))
+    expect(screen.getByText('任务模块：力学 +1')).toBeInTheDocument()
+  })
+
+  it('核时数固定四位小数，异常原因可聚焦查看', () => {
+    render(<App />)
+    expect(screen.getByText('1.1256')).toBeInTheDocument()
+    expect(screen.getAllByLabelText('异常原因').length).toBeGreaterThan(0)
+  })
+
+  it('项目名称按文件状态给出提示，私有化显示删除与无值', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: '打开示例项目 E' }))
+    expect(screen.getByRole('status')).toHaveTextContent('无法找到此文件')
+    await user.click(screen.getByRole('button', { name: '私有化' }))
+    expect(screen.getByRole('button', { name: '打开示例项目 F' })).toHaveTextContent('文件已删除')
+    expect(screen.getAllByText('/').length).toBeGreaterThan(0)
   })
 
   // Catches option lists that stay stale after the table is narrowed to one project.
